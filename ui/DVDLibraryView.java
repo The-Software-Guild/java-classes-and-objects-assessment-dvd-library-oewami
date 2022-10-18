@@ -2,10 +2,6 @@ package ui;
 
 import dto.DVD;
 
-import java.text.ParseException;
-import java.util.Date;
-import ui.UserIO;
-
 public class DVDLibraryView {
 
     private UserIO io = new UserIO();
@@ -22,21 +18,21 @@ public class DVDLibraryView {
         return io.nextLine("Choice: ");
     }
 
-    public DVD createDVD() throws ParseException {
+    public DVD createDVD() {
         DVD dvd = new DVD();
         io.print("Details of DVD");
         String title = io.nextLine("DVD Title: ");
-//        String releaseDate = io.nextLine("Release date: dd/MM/yyyy");
-//        String rating = io.nextLine("Rating");
-//        String directorName = io.nextLine("Director Name:");
-//        String studio = io.nextLine("Studio: ");
-//        String userNotes = io.nextLine("Notes: ");
+        String releaseDate = io.nextLine("Release date: dd/MM/yyyy");
+        String rating = io.nextLine("Rating");
+        String directorName = io.nextLine("Director Name:");
+        String studio = io.nextLine("Studio: ");
+        String userNotes = io.nextLine("Notes: ");
         dvd.setTitle(title);
-//        dvd.setDate(releaseDate);
-//        dvd.setRating(rating);
-//        dvd.setDirectorName(directorName);
-//        dvd.setStudio(studio);
-//        dvd.setUserNotes(userNotes);
+        dvd.setDate(releaseDate);
+        dvd.setRating(rating);
+        dvd.setDirectorName(directorName);
+        dvd.setStudio(studio);
+        dvd.setUserNotes(userNotes);
         return dvd;
     }
 }

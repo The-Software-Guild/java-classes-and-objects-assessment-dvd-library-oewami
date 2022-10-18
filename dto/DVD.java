@@ -1,13 +1,13 @@
 package dto;
 
-import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DVD {
 
     private String title;
-    private Date releaseDate;
+    private String releaseDate;
     private String rating;
     private String directorName;
     private String studio;
@@ -15,7 +15,7 @@ public class DVD {
 
     public DVD() {}
 
-    public DVD(String title, Date releaseDate, String rating, String directorName, String studio, String userNotes) {
+    public DVD(String title, String releaseDate, String rating, String directorName, String studio, String userNotes) {
         this.title = title;
         this.releaseDate = releaseDate;
         this.rating = rating;
@@ -32,19 +32,11 @@ public class DVD {
         this.title = title;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return releaseDate;
     }
 
-    public void setDate(String releaseDate) throws ParseException {
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-            Date date = format.parse(releaseDate);
-            this.releaseDate = date;
-        } catch(ParseException e) {
-            System.out.println("Date not set");
-        }
-    }
+    public void setDate(String releaseDate)  {this.releaseDate = releaseDate; }
 
     public String getRating() {
         return rating;
