@@ -1,22 +1,28 @@
 package dto;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DVD {
-    /**
-     * Title
-     * Release date
-     * MPAA rating
-     * Director's name
-     * Studio
-     * User rating or note (allows the user to enter additional information, e.g., "Good family movie")
-     */
+
     private String title;
-    private Date date;
+    private Date releaseDate;
     private String rating;
     private String directorName;
     private String studio;
     private String userNotes;
+
+    public DVD() {}
+
+    public DVD(String title, Date releaseDate, String rating, String directorName, String studio, String userNotes) {
+        this.title = title;
+        this.releaseDate = releaseDate;
+        this.rating = rating;
+        this.directorName = directorName;
+        this.studio = studio;
+        this.userNotes = userNotes;
+    }
 
     public String getTitle() {
         return title;
@@ -27,11 +33,17 @@ public class DVD {
     }
 
     public Date getDate() {
-        return date;
+        return releaseDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(String releaseDate) throws ParseException {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = format.parse(releaseDate);
+            this.releaseDate = date;
+        } catch(ParseException e) {
+            System.out.println("Date not set");
+        }
     }
 
     public String getRating() {

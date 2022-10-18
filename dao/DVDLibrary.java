@@ -6,6 +6,7 @@ import java.util.*;
 
 public class DVDLibrary implements DVDLibraryDao {
 
+    private List<DVD> library = new ArrayList<>();
     /**
      * Adds a DVD to the library.
      *
@@ -17,17 +18,19 @@ public class DVDLibrary implements DVDLibraryDao {
      * @param userNotes additional information that the user has for the dvd
      * @return
      */
-    private List<DVD> library = new ArrayList<>();
-
     @Override
-    public DVD addDVD(String dvdTitle, Date releaseDate, String Rating, String directorName, String studio, String userNotes) {
-        // TODO
-        return new DVD();
+    public DVD addDVD(DVD dvd) {
+        library.add(dvd);
+        return dvd;
     }
 
     @Override
     public DVD search(String title) {
-        // TODO
+        for(DVD dvd : library) {
+            if(dvd.getTitle().equals(title)) {
+                return dvd;
+            }
+        }
         return null;
     }
 
@@ -40,8 +43,9 @@ public class DVDLibrary implements DVDLibraryDao {
      */
     @Override
     public DVD removeDVD(String title) {
-        // TODO
-        return null;
+        DVD dvd = search(title);
+        library.remove(dvd);
+        return dvd;
     }
 
     /**
@@ -53,6 +57,7 @@ public class DVDLibrary implements DVDLibraryDao {
     @Override
     public DVD updateDVD(String title) {
         // TODO
+        DVD dvd = search(title);
         return null;
     }
 
@@ -63,7 +68,7 @@ public class DVDLibrary implements DVDLibraryDao {
      * @return the DVD object associated with the given title
      */
     @Override
-    public DVD getDVDInfo(String title) {
+    public DVD searchInfo(String title) {
         // TODO
         return null;
     }
@@ -75,8 +80,7 @@ public class DVDLibrary implements DVDLibraryDao {
      */
     @Override
     public List<DVD> getLibrary() {
-        // TODO
-        return new ArrayList<>();
+        return this.library;
     }
 
 }

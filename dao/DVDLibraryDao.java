@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface DVDLibraryDao {
 
-    public DVD addDVD(String dvdTitle, Date releaseDate, String rating, String directorName, String studio, String userNotes);
+    public DVD addDVD(DVD dvd);
 
     public DVD search(String title);
 
@@ -15,7 +15,7 @@ public interface DVDLibraryDao {
 
     public DVD updateDVD(String title);
 
-    public DVD getDVDInfo(String title);
+    public DVD searchInfo(String title);
 
     List<DVD> getLibrary();
 
