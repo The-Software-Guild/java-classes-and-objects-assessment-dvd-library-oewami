@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class UserIO implements ReadableIO {
 
+    final private Scanner scanner = new Scanner(System.in);
     @Override
     public void print(String message) {
         System.out.println(message);
@@ -11,11 +12,12 @@ public class UserIO implements ReadableIO {
 
     @Override
     public String nextLine(String prompt) {
-        Scanner scanner = new Scanner(System.in);
         System.out.println(prompt);
         String input = scanner.nextLine();
-        System.out.println(input);
-        scanner.close();
         return input;
+    }
+
+    public void closeScanner() {
+        scanner.close();
     }
 }

@@ -1,9 +1,6 @@
 package dto;
 
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class DVD {
 
     private String title;
@@ -36,7 +33,7 @@ public class DVD {
         return releaseDate;
     }
 
-    public void setDate(String releaseDate)  {this.releaseDate = releaseDate; }
+    public void setReleaseDate(String releaseDate)  {this.releaseDate = releaseDate; }
 
     public String getRating() {
         return rating;
@@ -68,5 +65,16 @@ public class DVD {
 
     public void setUserNotes(String userNotes) {
         this.userNotes = userNotes;
+    }
+
+    @Override
+    public String toString() {
+        String builder = "Title: " + this.title + "," +
+                "Release Date: " + this.releaseDate + "," +
+                "MPAA Rating: " + this.rating + "," +
+                "Director's Name: " + this.directorName + "," +
+                "Studio: " + this.studio + "," +
+                "User Notes: " + this.userNotes + "\n";
+        return builder;
     }
 }

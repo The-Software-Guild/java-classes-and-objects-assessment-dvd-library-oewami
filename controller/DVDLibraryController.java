@@ -6,51 +6,138 @@ import dto.DVD;
 import ui.DVDLibraryView;
 import ui.UserIO;
 
-import java.text.ParseException;
-import java.util.Date;
+import java.util.List;
 
 public class DVDLibraryController {
 
     private DVDLibraryDao dao = new DVDLibrary();
     private DVDLibraryView view = new DVDLibraryView();
-    private UserIO io = new UserIO();
 
-    public void run() throws ParseException {
+    /**
+     * Main method to run in the application*
+     */
+    public void run() {
         boolean isContinuing = true;
-        String input = view.getMenu();
 
         while(isContinuing) {
+            String input = view.getMenu();
             switch(input) {
                 case "1":
-                    io.print("Get DVD Library");
+                    getLibrary();
                     break;
                 case "2":
-                    io.print("2. Create new DVD");
                     createDVD();
                     break;
                 case "3":
-                    io.print("3. Remove a DVD");
+                    removeDVD();
                     break;
                 case "4":
-                    io.print("4. Get DVD info");
+                    editDVD();
                     break;
                 case "5":
-                    io.print("5. Delete a DVD");
+                    searchDVD();
                     break;
                 case "6":
-                    io.print("6. Exit");
                     isContinuing = false;
                     break;
                 default:
-                    io.print("Invalid input");
+                    System.out.println("Invalid input");
             }
         }
-        io.print("Closing Library");
+        view.closeScanner();
+
     }
 
-    private void createDVD() throws ParseException {
+    private void createDVD() {
         DVD dvd = view.createDVD();
         dao.addDVD(dvd);
-        io.print("Created DVD");
     }
+
+    private void getLibrary() {
+        List<DVD> library = dao.getLibrary();
+        for(DVD dvd : library) {
+            view.getDVDInfo(dvd);
+        }
+    }
+
+    private void editDVD() {
+        boolean isValidInput = false;
+
+        while(!isValidInput) {
+            String choice = view.getEditMenu();
+            String title = view.search();
+
+            switch (choice) {
+                case "1":
+                    //title
+                    updateTitle(title, view.getUpdatedTitle());
+                    isValidInput = true;
+                    break;
+                case "2":
+                    //release date
+                    updateReleaseDate(title, view.getUpdatedReleaseDate());
+                    isValidInput = true;
+                    break;
+                case "3":
+                    //mpaa rating
+                    updateRating(title, view.getUpdatedRating());
+                    isValidInput = true;
+                    break;
+                case "4":
+                    //director name
+                    updateDirectorName(title, view.getUpdatedDirectorName());
+                    isValidInput = true;
+                    break;
+                case "5":
+                    //studio
+                    updateStudio(title, view.getUpdatedStudio());
+                    isValidInput = true;
+                    break;
+                case "6":
+                    //user notes
+                    updateUserNotes(title, view.getUpdatedUserNotes());
+                    isValidInput = true;
+                    break;
+                default:
+                    System.out.println("Invalid input");
+
+            }
+        }
+
+    }
+
+    private DVD updateTitle(String originalTitle, String updatedTitle) {
+        return dao.updateTitle(originalTitle, updatedTitle);
+    }
+
+    private DVD updateReleaseDate(String title, String updatedDate) {
+        return dao.updateReleaseDate(title, updatedDate);
+    }
+
+    private DVD updateRating(String title, String updatedRating) {
+        return dao.updateRating(title, updatedRating);
+    }
+
+    private DVD updateDirectorName(String title, String updatedDirectorName) {
+        return dao.updateDirectorName(title, updatedDirectorName);
+    }
+
+    private DVD updateStudio(String title, String updatedStudio) {
+        return dao.updateStudio(title, updatedStudio);
+    }
+
+    private DVD updateUserNotes(String title, String updatedUserNotes) {
+        return dao.updateUserNotes(title, updatedUserNotes);
+    }
+
+    private void removeDVD() {
+        String titleToRemove = view.search();
+        dao.removeDVD(titleToRemove);
+    }
+
+    private void searchDVD() {
+        DVD dvd = dao.search(view.search());
+        view.getDVDInfo(dvd);
+    }
+
 }

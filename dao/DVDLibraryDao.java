@@ -1,8 +1,6 @@
 package dao;
 
 import dto.DVD;
-
-import java.util.Date;
 import java.util.List;
 
 public interface DVDLibraryDao {
@@ -13,9 +11,19 @@ public interface DVDLibraryDao {
 
     public DVD removeDVD(String title);
 
-    public DVD updateDVD(String title);
+    public DVD updateTitle(String originalTitle, String updatedTitle);
 
-    public DVD searchInfo(String title);
+    public DVD updateReleaseDate(String title, String updatedDate);
+
+    public DVD updateRating(String title, String updatedRating);
+
+    public DVD updateDirectorName(String title, String updatedDirectorName);
+
+    public DVD updateStudio(String title, String updatedStudio);
+
+    public DVD updateUserNotes(String title, String updatedUserNotes);
+
+//    public DVD searchInfo(String title);
 
     List<DVD> getLibrary();
 
