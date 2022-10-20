@@ -31,7 +31,7 @@ public class DVDLibraryView {
         return io.nextLine("Choice:");
     }
 
-    public DVD createDVD() {
+    public String[] createDVD() {
         DVD dvd = new DVD();
         io.print("Please enter the details of DVD");
         String title = io.nextLine("DVD Title: ");
@@ -40,13 +40,8 @@ public class DVDLibraryView {
         String directorName = io.nextLine("Director Name:");
         String studio = io.nextLine("Studio: ");
         String userNotes = io.nextLine("Notes: ");
-        dvd.setTitle(title);
-        dvd.setReleaseDate(releaseDate);
-        dvd.setRating(rating);
-        dvd.setDirectorName(directorName);
-        dvd.setStudio(studio);
-        dvd.setUserNotes(userNotes);
-        return dvd;
+        String[] details = {title, releaseDate, rating, directorName, studio, userNotes};
+        return details;
     }
 
     public void getDVDInfo(DVD dvd) {

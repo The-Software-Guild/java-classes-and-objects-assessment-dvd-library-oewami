@@ -29,7 +29,7 @@ public class DVD {
         this.title = title;
     }
 
-    public String getDate() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
@@ -74,7 +74,7 @@ public class DVD {
                 "MPAA Rating: " + this.rating + "," +
                 "Director's Name: " + this.directorName + "," +
                 "Studio: " + this.studio + "," +
-                "User Notes: " + this.userNotes + "\n";
+                "User Notes: " + this.userNotes;
         return builder;
     }
 }

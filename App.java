@@ -1,13 +1,9 @@
 import controller.DVDLibraryController;
-import ui.UserIO;
-
-import java.text.ParseException;
 
 public class App {
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws Exception {
         DVDLibraryController controller = new DVDLibraryController();
         controller.run();
-
     }
 }
