@@ -7,7 +7,7 @@ public class DVDLibraryView {
     private UserIO io = new UserIO();
 
     public String getMenu() {
-        io.print("Main Menu");
+        io.print("\nMain Menu");
         io.print("1. Get DVD Library");
         io.print("2. Create new DVD");
         io.print("3. Remove a DVD");
@@ -19,14 +19,13 @@ public class DVDLibraryView {
     }
 
     public String getEditMenu() {
-        io.print("***Edit Menu***");
+        io.print("\n***Edit Menu***");
         io.print("1. Title");
         io.print("2. Release Date");
         io.print("3. MPAA rating");
         io.print("4. Director Name");
         io.print("5. Studio");
         io.print("6. User Notes");
-//        io.print("5. 1-2 lunch, code review after 2");
 
         return io.nextLine("Choice:");
     }

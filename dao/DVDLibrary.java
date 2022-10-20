@@ -114,6 +114,39 @@ public class DVDLibrary implements DVDLibraryDao {
     }
 
     /**
+     * Removes the DVD associated with the given title from the library.
+     * Returns the DVD object that is being removed
+     *
+     * @param title title of the DVD to be removed
+     * @return DVD object that was removed
+     */
+    @Override
+    public DVD removeDVD(String title) throws IOException {
+        DVD dvd = search(title);
+        String dvdString = DVDtoFileString(dvd);
+
+        BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
+        String line;
+        StringBuffer builder = new StringBuffer();
+
+
+        while((line = reader.readLine()) != null) {
+            if(!dvdString.trim().equals(line)) {
+                builder.append(line);
+                builder.append(System.lineSeparator());
+            }
+        }
+
+            FileWriter writer = new FileWriter(DVD_FILE);
+            writer.append(builder.toString());
+            writer.flush();
+            writer.close();
+
+        library.remove(dvd);
+        return dvd;
+    }
+
+    /**
      * Searches for a DVD with the given title from the library.
      *
      * @param title
@@ -128,23 +161,6 @@ public class DVDLibrary implements DVDLibraryDao {
             }
         }
         return null;
-    }
-
-    /**
-     * Removes the DVD associated with the given title from the library.
-     * Returns the DVD object that is being removed
-     *
-     * @param title title of the DVD to be removed
-     * @return DVD object that was removed
-     */
-    @Override
-    public DVD removeDVD(String title) throws IOException {
-        DVD dvd = search(title);
-        BufferedWriter writer = new BufferedWriter(new FileWriter(DVD_FILE, true));
-        writer.write(DVDtoFileString(dvd));
-        writer.close();
-        library.remove(dvd);
-        return dvd;
     }
 
     /**

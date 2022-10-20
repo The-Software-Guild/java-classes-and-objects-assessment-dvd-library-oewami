@@ -69,11 +69,11 @@ public class DVD {
 
     @Override
     public String toString() {
-        String builder = "Title: " + this.title + "," +
-                "Release Date: " + this.releaseDate + "," +
-                "MPAA Rating: " + this.rating + "," +
-                "Director's Name: " + this.directorName + "," +
-                "Studio: " + this.studio + "," +
+        String builder = "Title: " + this.title + ", " +
+                "Release Date: " + this.releaseDate + ", " +
+                "MPAA Rating: " + this.rating + ", " +
+                "Director's Name: " + this.directorName + ", " +
+                "Studio: " + this.studio + ", " +
                 "User Notes: " + this.userNotes;
         return builder;
     }

@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class UserIO implements ReadableIO {
 
     final private Scanner scanner = new Scanner(System.in);
+
     @Override
     public void print(String message) {
         System.out.println(message);
