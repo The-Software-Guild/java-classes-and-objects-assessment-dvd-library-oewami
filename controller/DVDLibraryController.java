@@ -4,8 +4,6 @@ import dao.DVDLibraryDaoImpl;
 import dao.DVDLibraryDao;
 import dto.DVD;
 import ui.DVDLibraryView;
-
-import java.io.IOException;
 import java.util.List;
 
 
@@ -17,7 +15,7 @@ public class DVDLibraryController {
     /**
      * Main method to run in the application*
      */
-    public void run() throws IOException {
+    public void run() {
         boolean isContinuing = true;
 
         while(isContinuing) {
@@ -49,19 +47,19 @@ public class DVDLibraryController {
 
     }
 
-    private void createDVD() throws IOException {
+    private void createDVD() {
         String[] details = view.createDVD();
         dao.createDVD(details);
     }
 
-    private void getLibrary() throws IOException {
+    private void getLibrary() {
         List<DVD> library = dao.getLibrary();
         for(DVD dvd : library) {
             view.displayDVDInfo(dvd);
         }
     }
 
-    private void editDVD() throws IOException {
+    private void editDVD() {
         boolean isValidInput = false;
         boolean isDVDExist = false;
         String title = "";
@@ -117,36 +115,36 @@ public class DVDLibraryController {
 
     }
 
-    private DVD updateTitle(String originalTitle, String updatedTitle) throws IOException{
+    private DVD updateTitle(String originalTitle, String updatedTitle) {
         return dao.updateTitle(originalTitle, updatedTitle);
     }
 
-    private DVD updateReleaseDate(String title, String updatedDate)  throws IOException{
+    private DVD updateReleaseDate(String title, String updatedDate) {
         return dao.updateReleaseDate(title, updatedDate);
     }
 
-    private DVD updateRating(String title, String updatedRating) throws IOException {
+    private DVD updateRating(String title, String updatedRating) {
         return dao.updateRating(title, updatedRating);
     }
 
-    private DVD updateDirectorName(String title, String updatedDirectorName) throws IOException {
+    private DVD updateDirectorName(String title, String updatedDirectorName) {
         return dao.updateDirectorName(title, updatedDirectorName);
     }
 
-    private DVD updateStudio(String title, String updatedStudio) throws IOException {
+    private DVD updateStudio(String title, String updatedStudio) {
         return dao.updateStudio(title, updatedStudio);
     }
 
-    private DVD updateUserNotes(String title, String updatedUserNotes) throws IOException {
+    private DVD updateUserNotes(String title, String updatedUserNotes) {
         return dao.updateUserNotes(title, updatedUserNotes);
     }
 
-    private void removeDVD() throws IOException {
+    private void removeDVD() {
         String titleToRemove = view.getSearchTitle();
         if(!dao.removeDVD(titleToRemove)) view.displayNotFound();
     }
 
-    private void searchDVD() throws IOException {
+    private void searchDVD() {
         DVD dvd = dao.search(view.getSearchTitle());
         if(dvd != null) {
             view.displayDVDInfo(dvd);

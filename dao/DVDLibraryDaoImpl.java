@@ -66,16 +66,21 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * library.
      *
      * @return a List containing DVD objects
-     * @throws IOException
      */
-    public List<DVD> convertFileToLibrary() throws IOException {
+    public List<DVD> convertFileToLibrary() {
         if(library.isEmpty()) {
             String line;
-            BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
-            while ((line = reader.readLine()) != null) {
-                library.add(stringToDVD(line));
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
+                while ((line = reader.readLine()) != null) {
+                    library.add(stringToDVD(line));
+                }
+                reader.close();
+            } catch (IOException e) {
+                System.out.println("FILE NOT FOUND");
+            } finally {
+                return library;
             }
-            reader.close();
         }
         return library;
     }
@@ -87,47 +92,55 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @param oldText The text that needs to be replaced in the file and DVD object.
      * @param replacement The text that will replace oldText in the file and DVD object.
      * @param section The field that the replacement text goes to. For example details[section] = title, releaseDate, etc...;
-     * @throws IOException
      */
-    public void replace(DVD dvd, String oldText, String replacement, int section) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
-        String line;
-        StringBuffer builder = new StringBuffer();
+    public boolean replace(DVD dvd, String oldText, String replacement, int section) {
+        BufferedReader reader;
         boolean isFound = false;
 
-        //iterate through the entire file
-        while((line = reader.readLine()) != null) {
+        try {
+            reader = new BufferedReader(new FileReader(DVD_FILE));
+            String line;
+            StringBuffer builder = new StringBuffer();
 
-            // if the DVD[section] is the same as the oldText the line is identical
-            if(DVDtoFileString(dvd).split(DELIMITER)[section].equals(oldText)) {
-                String[] details = line.split(DELIMITER);
-                // flag checking if dvd was found as string in file
-                isFound = true;
-                details[section] = replacement;
-                StringBuilder lineBuilder = new StringBuilder();
+            //iterate through the entire file
+            while ((line = reader.readLine()) != null) {
 
-                // reconstruct the line in the file with the replacement text
-                for(int i = 0; i < details.length; i++) {
-                    String detail = details[i];
-                    lineBuilder.append(detail);
-                    if(i < details.length - 1) {
-                        lineBuilder.append(DELIMITER);
+                // if the DVD[section] is the same as the oldText the line is identical
+                if (DVDtoFileString(dvd).split(DELIMITER)[section].equals(oldText)) {
+                    String[] details = line.split(DELIMITER);
+                    // flag checking if dvd was found as string in file
+                    isFound = true;
+                    details[section] = replacement;
+                    StringBuilder lineBuilder = new StringBuilder();
+
+                    // reconstruct the line in the file with the replacement text
+                    for (int i = 0; i < details.length; i++) {
+                        String detail = details[i];
+                        lineBuilder.append(detail);
+                        if (i < details.length - 1) {
+                            lineBuilder.append(DELIMITER);
+                        }
                     }
+                    line = lineBuilder.toString();
                 }
-                line = lineBuilder.toString();
+                builder.append(line);
+                builder.append(System.lineSeparator());
             }
-            builder.append(line);
-            builder.append(System.lineSeparator());
-        }
+            // only write to the file if a line was changed
+            if(isFound) {
+                FileWriter writer = new FileWriter(DVD_FILE);
+                writer.append(builder.toString());
+                writer.flush();
+                writer.close();
+            }
+            reader.close();
 
-        // only write to the file if a line was changed
-        if(isFound) {
-            FileWriter writer = new FileWriter(DVD_FILE);
-            writer.append(builder.toString());
-            writer.flush();
-            writer.close();
+        } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
         }
-        reader.close();
+        finally {
+            return isFound;
+        }
     }
 
     /**
@@ -137,13 +150,18 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return The DVD that was added to the library.
      */
     @Override
-    public DVD createDVD(String[] details) throws IOException {
+    public DVD createDVD(String[] details) {
         DVD dvd = new DVD(details[TITLE], details[RELEASE_DATE], details[RATING], details[DIRECTOR_NAME], details[STUDIO], details[USER_NOTES]);
         library.add(dvd);
-        BufferedWriter writer = new BufferedWriter(new FileWriter(DVD_FILE, true));
-        writer.write(DVDtoFileString(dvd));
-        writer.close();
-        return dvd;
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(DVD_FILE, true));
+            writer.write(DVDtoFileString(dvd));
+            writer.close();
+            return dvd;
+        } catch (IOException e) {
+            System.out.println("FILE NOT FOUND");
+        }
+        return null;
     }
 
     /**
@@ -155,32 +173,36 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return
      */
     @Override
-    public boolean removeDVD(String title) throws IOException {
+    public boolean removeDVD(String title) {
         DVD dvd = search(title);
 
         if(dvd != null) {
             String dvdString = DVDtoFileString(dvd);
 
-            BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
-            String line;
-            StringBuffer builder = new StringBuffer();
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
+                String line;
+                StringBuffer builder = new StringBuffer();
 
-            //look for the matching DVD as string text and skip when found
-            while ((line = reader.readLine()) != null) {
-                if (!dvdString.trim().equals(line)) {
-                    builder.append(line);
-                    builder.append(System.lineSeparator());
+                //look for the matching DVD as string text and skip when found
+                while ((line = reader.readLine()) != null) {
+                    if (!dvdString.trim().equals(line)) {
+                        builder.append(line);
+                        builder.append(System.lineSeparator());
+                    }
                 }
+
+                // rewrite the file with the removed string
+                FileWriter writer = new FileWriter(DVD_FILE);
+                writer.append(builder.toString());
+                writer.flush();
+                writer.close();
+
+                library.remove(dvd);
+                return true;
+            } catch (IOException e) {
+                System.out.println("FILE NOT FOUND");
             }
-
-            // rewrite the file with the removed string
-            FileWriter writer = new FileWriter(DVD_FILE);
-            writer.append(builder.toString());
-            writer.flush();
-            writer.close();
-
-            library.remove(dvd);
-            return true;
         }
         return false;
     }
@@ -210,7 +232,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return DVD object with updated title.
      */
     @Override
-    public DVD updateTitle(String originalTitle, String updatedTitle) throws IOException {
+    public DVD updateTitle(String originalTitle, String updatedTitle) {
         DVD dvd = search(originalTitle);
         if(dvd != null) {
             dvd.setTitle(updatedTitle);
@@ -229,7 +251,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return DVD object with updated title.
      */
     @Override
-    public DVD updateReleaseDate(String title, String updatedDate) throws IOException {
+    public DVD updateReleaseDate(String title, String updatedDate) {
         DVD dvd = search(title);
         if(dvd != null) {
             replace(dvd, dvd.getReleaseDate(), updatedDate, RELEASE_DATE);
@@ -246,7 +268,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return DVD object with the updated rating
      */
     @Override
-    public DVD updateRating(String title, String updatedRating) throws IOException {
+    public DVD updateRating(String title, String updatedRating) {
         DVD dvd = search(title);
         if(dvd != null) {
             replace(dvd, dvd.getRating(), updatedRating, RATING);
@@ -264,7 +286,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return DVD object with the updated director name
      */
     @Override
-    public DVD updateDirectorName(String title, String updatedDirectorName) throws IOException {
+    public DVD updateDirectorName(String title, String updatedDirectorName) {
         DVD dvd = search(title);
         if(dvd != null) {
             replace(dvd, dvd.getDirectorName(), updatedDirectorName, DIRECTOR_NAME);
@@ -281,7 +303,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return DVD object with the updated studio
      */
     @Override
-    public DVD updateStudio(String title, String updatedStudio) throws IOException {
+    public DVD updateStudio(String title, String updatedStudio) {
         DVD dvd = search(title);
         if(dvd != null) {
             replace(dvd, dvd.getStudio(), updatedStudio, STUDIO);
@@ -299,7 +321,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return DVD object with the updated user notes
      */
     @Override
-    public DVD updateUserNotes(String title, String updatedUserNotes) throws IOException {
+    public DVD updateUserNotes(String title, String updatedUserNotes) {
         DVD dvd = search(title);
         if(dvd != null) {
             replace(dvd, dvd.getUserNotes(), updatedUserNotes, USER_NOTES);
@@ -314,7 +336,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return List containing all the DVDs in the library
      */
     @Override
-    public List<DVD> getLibrary() throws IOException {
+    public List<DVD> getLibrary() {
         convertFileToLibrary();
         return library;
     }
