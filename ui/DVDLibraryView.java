@@ -30,8 +30,15 @@ public class DVDLibraryView {
         return io.nextLine("Choice:");
     }
 
+    public void displayInvalidInput() {
+        io.print("Invalid Input");
+    }
+
+    public void displayNotFound() {
+        io.print("DVD not Found");
+    }
+
     public String[] createDVD() {
-        DVD dvd = new DVD();
         io.print("Please enter the details of DVD");
         String title = io.nextLine("DVD Title: ");
         String releaseDate = io.nextLine("Release date: dd/MM/yyyy");
@@ -43,11 +50,11 @@ public class DVDLibraryView {
         return details;
     }
 
-    public void getDVDInfo(DVD dvd) {
+    public void displayDVDInfo(DVD dvd) {
         io.print(dvd.toString());
     }
 
-    public String search() {
+    public String getSearchTitle() {
         String lookingFor = io.nextLine("Name of DVD you are looking for");
         return lookingFor;
     }

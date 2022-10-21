@@ -5,7 +5,7 @@ import dto.DVD;
 import java.io.*;
 import java.util.*;
 
-public class DVDLibrary implements DVDLibraryDao {
+public class DVDLibraryDaoImpl implements DVDLibraryDao {
 
     private final String DVD_FILE;
     private final String DELIMITER = "::";
@@ -19,14 +19,20 @@ public class DVDLibrary implements DVDLibraryDao {
     private final int USER_NOTES = 5;
 
 
-    public DVDLibrary()  {
+    public DVDLibraryDaoImpl()  {
         this.DVD_FILE = "test.txt";
     }
 
-    public DVDLibrary(String file) {
+    public DVDLibraryDaoImpl(String file) {
         this.DVD_FILE = file;
     }
 
+    /**
+     * Converts the DVD object into a formatted string to be stored in
+     * a file
+     * @param dvd the DVD object
+     * @return DVD as string with delimiter
+     */
     public String DVDtoFileString(DVD dvd) {
         String formattedString = dvd.getTitle() + DELIMITER
                 + dvd.getReleaseDate() + DELIMITER
@@ -37,6 +43,11 @@ public class DVDLibrary implements DVDLibraryDao {
         return formattedString;
     }
 
+    /**
+     * Converts text into a DVD object.
+     * @param line The information of a DVD as a string
+     * @return The DVD object
+     */
     public DVD stringToDVD(String line) {
         String[] details = line.split(DELIMITER);
         DVD dvd = new DVD();
@@ -49,6 +60,14 @@ public class DVDLibrary implements DVDLibraryDao {
         return dvd;
     }
 
+    /**
+     * Helper function for getLibrary. Takes the DVD_FILE and converts
+     * the contents into DVD objects. Objects are then added to the
+     * library.
+     *
+     * @return a List containing DVD objects
+     * @throws IOException
+     */
     public List<DVD> convertFileToLibrary() throws IOException {
         if(library.isEmpty()) {
             String line;
@@ -61,21 +80,33 @@ public class DVDLibrary implements DVDLibraryDao {
         return library;
     }
 
-
+    /**
+     * Replaces text in a file in a specific section.
+     *
+     * @param dvd The DVD object. Used to convert the DVD to a file formatted string.
+     * @param oldText The text that needs to be replaced in the file and DVD object.
+     * @param replacement The text that will replace oldText in the file and DVD object.
+     * @param section The field that the replacement text goes to. For example details[section] = title, releaseDate, etc...;
+     * @throws IOException
+     */
     public void replace(DVD dvd, String oldText, String replacement, int section) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
         String line;
         StringBuffer builder = new StringBuffer();
         boolean isFound = false;
 
+        //iterate through the entire file
         while((line = reader.readLine()) != null) {
 
+            // if the DVD[section] is the same as the oldText the line is identical
             if(DVDtoFileString(dvd).split(DELIMITER)[section].equals(oldText)) {
                 String[] details = line.split(DELIMITER);
+                // flag checking if dvd was found as string in file
                 isFound = true;
                 details[section] = replacement;
                 StringBuilder lineBuilder = new StringBuilder();
 
+                // reconstruct the line in the file with the replacement text
                 for(int i = 0; i < details.length; i++) {
                     String detail = details[i];
                     lineBuilder.append(detail);
@@ -89,6 +120,7 @@ public class DVDLibrary implements DVDLibraryDao {
             builder.append(System.lineSeparator());
         }
 
+        // only write to the file if a line was changed
         if(isFound) {
             FileWriter writer = new FileWriter(DVD_FILE);
             writer.append(builder.toString());
@@ -101,6 +133,7 @@ public class DVDLibrary implements DVDLibraryDao {
     /**
      * Adds a DVD to the library.
      *
+     * @param details An array of information about the DVD
      * @return The DVD that was added to the library.
      */
     @Override
@@ -115,35 +148,41 @@ public class DVDLibrary implements DVDLibraryDao {
 
     /**
      * Removes the DVD associated with the given title from the library.
-     * Returns the DVD object that is being removed
+     * true if the object was removed from the library. false if
+     * the item does not exist.
      *
      * @param title title of the DVD to be removed
-     * @return DVD object that was removed
+     * @return
      */
     @Override
-    public DVD removeDVD(String title) throws IOException {
+    public boolean removeDVD(String title) throws IOException {
         DVD dvd = search(title);
-        String dvdString = DVDtoFileString(dvd);
 
-        BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
-        String line;
-        StringBuffer builder = new StringBuffer();
+        if(dvd != null) {
+            String dvdString = DVDtoFileString(dvd);
 
+            BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
+            String line;
+            StringBuffer builder = new StringBuffer();
 
-        while((line = reader.readLine()) != null) {
-            if(!dvdString.trim().equals(line)) {
-                builder.append(line);
-                builder.append(System.lineSeparator());
+            //look for the matching DVD as string text and skip when found
+            while ((line = reader.readLine()) != null) {
+                if (!dvdString.trim().equals(line)) {
+                    builder.append(line);
+                    builder.append(System.lineSeparator());
+                }
             }
-        }
 
+            // rewrite the file with the removed string
             FileWriter writer = new FileWriter(DVD_FILE);
             writer.append(builder.toString());
             writer.flush();
             writer.close();
 
-        library.remove(dvd);
-        return dvd;
+            library.remove(dvd);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -268,7 +307,6 @@ public class DVDLibrary implements DVDLibraryDao {
         }
         return null;
     }
-
 
     /**
      * Returns a List of all the DVDs in the library

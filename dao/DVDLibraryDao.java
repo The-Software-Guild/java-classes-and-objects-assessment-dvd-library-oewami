@@ -11,7 +11,7 @@ public interface DVDLibraryDao {
 
     public DVD search(String title) throws IOException;
 
-    public DVD removeDVD(String title) throws IOException;
+    public boolean removeDVD(String title) throws IOException;
 
     public DVD updateTitle(String originalTitle, String updatedTitle) throws IOException;
 

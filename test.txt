@@ -1,3 +1,4 @@
-gibberish::20/10/2022::E::gib zib::zane::hello
-more::than::you::will::ever::less
-more::here::haha::lmnop::random::text
+gibberish::have a lot::E::gib zib::zane::hello
+more::have a lot::you::will::ever::less
+more::have a lot::haha::lmnop::random::text
+i::have a lot::to::eat::pie::today

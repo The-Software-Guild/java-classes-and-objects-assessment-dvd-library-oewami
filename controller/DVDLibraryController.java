@@ -1,6 +1,6 @@
 package controller;
 
-import dao.DVDLibrary;
+import dao.DVDLibraryDaoImpl;
 import dao.DVDLibraryDao;
 import dto.DVD;
 import ui.DVDLibraryView;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DVDLibraryController {
 
-    private DVDLibraryDao dao = new DVDLibrary();
+    private DVDLibraryDao dao = new DVDLibraryDaoImpl();
     private DVDLibraryView view = new DVDLibraryView();
 
     /**
@@ -42,7 +42,7 @@ public class DVDLibraryController {
                     isContinuing = false;
                     break;
                 default:
-                    System.out.println("Invalid input");
+                    view.displayInvalidInput();
             }
         }
         view.closeScanner();
@@ -57,16 +57,26 @@ public class DVDLibraryController {
     private void getLibrary() throws IOException {
         List<DVD> library = dao.getLibrary();
         for(DVD dvd : library) {
-            view.getDVDInfo(dvd);
+            view.displayDVDInfo(dvd);
         }
     }
 
     private void editDVD() throws IOException {
         boolean isValidInput = false;
+        boolean isDVDExist = false;
+        String title = "";
+        DVD dvd;
+
+        // continue prompting the user for a valid title name that exists in the library
+        do {
+            title = view.getSearchTitle();
+            dvd = dao.search(title);
+            if(dvd != null) {isDVDExist = true;}
+            else {view.displayNotFound();}
+        } while(!isDVDExist);
 
         while(!isValidInput) {
             String choice = view.getEditMenu();
-            String title = view.search();
 
             switch (choice) {
                 case "1":
@@ -100,7 +110,7 @@ public class DVDLibraryController {
                     isValidInput = true;
                     break;
                 default:
-                    System.out.println("Invalid input");
+                    view.displayInvalidInput();
 
             }
         }
@@ -132,13 +142,17 @@ public class DVDLibraryController {
     }
 
     private void removeDVD() throws IOException {
-        String titleToRemove = view.search();
-        dao.removeDVD(titleToRemove);
+        String titleToRemove = view.getSearchTitle();
+        if(!dao.removeDVD(titleToRemove)) view.displayNotFound();
     }
 
     private void searchDVD() throws IOException {
-        DVD dvd = dao.search(view.search());
-        view.getDVDInfo(dvd);
+        DVD dvd = dao.search(view.getSearchTitle());
+        if(dvd != null) {
+            view.displayDVDInfo(dvd);
+        } else {
+            view.displayNotFound();
+        }
     }
 
 }
