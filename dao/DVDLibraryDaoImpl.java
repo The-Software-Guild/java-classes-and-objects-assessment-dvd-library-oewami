@@ -21,10 +21,12 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
 
     public DVDLibraryDaoImpl()  {
         this.DVD_FILE = "test.txt";
+        convertFileToLibrary();
     }
 
     public DVDLibraryDaoImpl(String file) {
         this.DVD_FILE = file;
+        convertFileToLibrary();
     }
 
     /**
@@ -68,7 +70,6 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      * @return a List containing DVD objects
      */
     public List<DVD> convertFileToLibrary() {
-        if(library.isEmpty()) {
             String line;
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
@@ -78,69 +79,8 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
                 reader.close();
             } catch (IOException e) {
                 System.out.println("FILE NOT FOUND");
-            } finally {
-                return library;
             }
-        }
         return library;
-    }
-
-    /**
-     * Replaces text in a file in a specific section.
-     *
-     * @param dvd The DVD object. Used to convert the DVD to a file formatted string.
-     * @param oldText The text that needs to be replaced in the file and DVD object.
-     * @param replacement The text that will replace oldText in the file and DVD object.
-     * @param section The field that the replacement text goes to. For example details[section] = title, releaseDate, etc...;
-     */
-    public boolean replace(DVD dvd, String oldText, String replacement, int section) {
-        BufferedReader reader;
-        boolean isFound = false;
-
-        try {
-            reader = new BufferedReader(new FileReader(DVD_FILE));
-            String line;
-            StringBuffer builder = new StringBuffer();
-
-            //iterate through the entire file
-            while ((line = reader.readLine()) != null) {
-
-                // if the DVD[section] is the same as the oldText the line is identical
-                if (DVDtoFileString(dvd).split(DELIMITER)[section].equals(oldText)) {
-                    String[] details = line.split(DELIMITER);
-                    // flag checking if dvd was found as string in file
-                    isFound = true;
-                    details[section] = replacement;
-                    StringBuilder lineBuilder = new StringBuilder();
-
-                    // reconstruct the line in the file with the replacement text
-                    for (int i = 0; i < details.length; i++) {
-                        String detail = details[i];
-                        lineBuilder.append(detail);
-                        if (i < details.length - 1) {
-                            lineBuilder.append(DELIMITER);
-                        }
-                    }
-                    line = lineBuilder.toString();
-                }
-                builder.append(line);
-                builder.append(System.lineSeparator());
-            }
-            // only write to the file if a line was changed
-            if(isFound) {
-                FileWriter writer = new FileWriter(DVD_FILE);
-                writer.append(builder.toString());
-                writer.flush();
-                writer.close();
-            }
-            reader.close();
-
-        } catch(IOException e) {
-            System.out.println("FILE NOT FOUND");
-        }
-        finally {
-            return isFound;
-        }
     }
 
     /**
@@ -153,15 +93,7 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
     public DVD createDVD(String[] details) {
         DVD dvd = new DVD(details[TITLE], details[RELEASE_DATE], details[RATING], details[DIRECTOR_NAME], details[STUDIO], details[USER_NOTES]);
         library.add(dvd);
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(DVD_FILE, true));
-            writer.write(DVDtoFileString(dvd));
-            writer.close();
-            return dvd;
-        } catch (IOException e) {
-            System.out.println("FILE NOT FOUND");
-        }
-        return null;
+        return dvd;
     }
 
     /**
@@ -175,34 +107,9 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
     @Override
     public boolean removeDVD(String title) {
         DVD dvd = search(title);
-
         if(dvd != null) {
-            String dvdString = DVDtoFileString(dvd);
-
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(DVD_FILE));
-                String line;
-                StringBuffer builder = new StringBuffer();
-
-                //look for the matching DVD as string text and skip when found
-                while ((line = reader.readLine()) != null) {
-                    if (!dvdString.trim().equals(line)) {
-                        builder.append(line);
-                        builder.append(System.lineSeparator());
-                    }
-                }
-
-                // rewrite the file with the removed string
-                FileWriter writer = new FileWriter(DVD_FILE);
-                writer.append(builder.toString());
-                writer.flush();
-                writer.close();
-
-                library.remove(dvd);
-                return true;
-            } catch (IOException e) {
-                System.out.println("FILE NOT FOUND");
-            }
+            library.remove(dvd);
+            return true;
         }
         return false;
     }
@@ -236,7 +143,6 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
         DVD dvd = search(originalTitle);
         if(dvd != null) {
             dvd.setTitle(updatedTitle);
-            replace(dvd, originalTitle, updatedTitle, TITLE);
             return dvd;
         }
         return null;
@@ -254,7 +160,6 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
     public DVD updateReleaseDate(String title, String updatedDate) {
         DVD dvd = search(title);
         if(dvd != null) {
-            replace(dvd, dvd.getReleaseDate(), updatedDate, RELEASE_DATE);
             dvd.setReleaseDate(updatedDate);
         }
         return null;
@@ -271,7 +176,6 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
     public DVD updateRating(String title, String updatedRating) {
         DVD dvd = search(title);
         if(dvd != null) {
-            replace(dvd, dvd.getRating(), updatedRating, RATING);
             dvd.setRating(updatedRating);
         }
         return null;
@@ -289,7 +193,6 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
     public DVD updateDirectorName(String title, String updatedDirectorName) {
         DVD dvd = search(title);
         if(dvd != null) {
-            replace(dvd, dvd.getDirectorName(), updatedDirectorName, DIRECTOR_NAME);
             dvd.setDirectorName(updatedDirectorName);
         }
         return null;
@@ -306,7 +209,6 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
     public DVD updateStudio(String title, String updatedStudio) {
         DVD dvd = search(title);
         if(dvd != null) {
-            replace(dvd, dvd.getStudio(), updatedStudio, STUDIO);
             dvd.setStudio(updatedStudio);
         }
         return null;
@@ -324,7 +226,6 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
     public DVD updateUserNotes(String title, String updatedUserNotes) {
         DVD dvd = search(title);
         if(dvd != null) {
-            replace(dvd, dvd.getUserNotes(), updatedUserNotes, USER_NOTES);
             dvd.setUserNotes(updatedUserNotes);
         }
         return null;
@@ -337,8 +238,25 @@ public class DVDLibraryDaoImpl implements DVDLibraryDao {
      */
     @Override
     public List<DVD> getLibrary() {
-        convertFileToLibrary();
         return library;
+    }
+
+    /**
+     * Saves the DVD library from the program to the DVD_FILE.
+     * Used when closing the application.
+     *
+     * @throws IOException
+     */
+    public void save() throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(DVD_FILE));
+        StringBuilder builder = new StringBuilder();
+        String line;
+        for(DVD dvd : library) {
+            line = DVDtoFileString(dvd);
+            builder.append(line);
+        }
+        writer.write(builder.toString());
+        writer.close();
     }
 
 }

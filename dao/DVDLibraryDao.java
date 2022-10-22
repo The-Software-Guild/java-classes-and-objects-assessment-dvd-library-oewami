@@ -27,4 +27,5 @@ public interface DVDLibraryDao {
 
     List<DVD> getLibrary();
 
+    void save() throws IOException;
 }

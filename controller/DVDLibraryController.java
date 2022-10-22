@@ -4,6 +4,8 @@ import dao.DVDLibraryDaoImpl;
 import dao.DVDLibraryDao;
 import dto.DVD;
 import ui.DVDLibraryView;
+
+import java.io.IOException;
 import java.util.List;
 
 
@@ -15,7 +17,7 @@ public class DVDLibraryController {
     /**
      * Main method to run in the application*
      */
-    public void run() {
+    public void run() throws IOException {
         boolean isContinuing = true;
 
         while(isContinuing) {
@@ -44,6 +46,7 @@ public class DVDLibraryController {
             }
         }
         view.closeScanner();
+        dao.save();
 
     }
 
